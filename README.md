@@ -1,4 +1,5 @@
-# Amrita Vishwa Vidyapeetham
+<img width="543" height="153" alt="image" src="https://github.com/user-attachments/assets/479d9ba6-0f4b-4f99-8576-7e60e6df769a" />
+
 
 ## Amrita School of Artificial Intelligence
 
@@ -10,10 +11,10 @@
 
 ## Team Members
 
-* Jignesh Sudheer — CB.SC.U4AIE24222 — B.Sc AI
-* Sharavn RM — CB.SC.U4AIE24253 — B.Sc AI
-* Bhadhresh R — CB.SC.U4AIE24208 — B.Sc AI
-* Gautham T — CB.SC.U4AIE24264 — B.Sc AI
+* Jignesh Sudheer — CB.SC.U4AIE24222 
+* Sharavn RM — CB.SC.U4AIE24253 
+* Bhadhresh R — CB.SC.U4AIE24208 
+* Gautham T — CB.SC.U4AIE24264 
 
 ---
 
@@ -22,31 +23,32 @@
 1. Abstract
 2. Introduction
 3. Methodology
-4. Dataset
-5. Implementation
-6. Results
-7. Conclusion
-8. References
+4. Mathematical Formulation
+5. Dataset
+6. Implementation
+7. Results and Inference
+8. Conclusion
+9. References
 
 ---
 
 ## Abstract
 
-This project presents MedBot, a biomedical question-answering system based on BioGPT. The system integrates prompt engineering and domain-specific fine-tuning on the BioASQ dataset to generate structured and context-aware medical responses. The model achieves a BLEU-2 score of 0.42 and demonstrates improved performance compared to baseline approaches.
+This project presents MedBot, a biomedical question-answering system built using BioGPT and enhanced through prompt engineering. The system is trained on the BioASQ dataset to generate medically relevant and structured responses. The model achieves a BLEU-2 score of 0.42, demonstrating improved performance over baseline approaches. The results show that combining domain-specific pretraining with structured prompts enhances both accuracy and coherence.
 
 ---
 
 ## Introduction
 
-Biomedical question answering requires both domain-specific understanding and natural language generation capability. Traditional encoder-based models are limited in generating free-form responses.
+Biomedical question answering requires understanding complex domain-specific language and generating meaningful responses. Traditional encoder-based models are limited in free-form text generation.
 
-MedBot addresses this limitation by using a decoder-only transformer (BioGPT) combined with prompt engineering. The system processes medical queries and generates responses similar to expert explanations.
+MedBot addresses this by using a decoder-only transformer model and prompt engineering to generate structured and context-aware biomedical answers.
 
 ---
 
 ## Methodology
 
-### Problem Formulation
+### Problem Definition
 
 Given a medical query:
 
@@ -56,165 +58,214 @@ $$
 
 where
 
-* $Q$ is the input medical question
-* $A$ is the generated biomedical answer
+* $Q$ is the input question
+* $A$ is the generated answer
 
 ---
 
 ### Model Architecture
 
-The system uses a decoder-only transformer:
-
-* Token Embedding
-* Positional Encoding
-* Multi-head Self Attention
-* Transformer Decoder Blocks
-* Linear Projection + Softmax
+The system uses a decoder-only transformer (BioGPT), which generates text autoregressively.
 
 ---
 
 ### Prompt Engineering
 
-Prompt templates are dynamically created based on question type:
-
-* Definition
-* Symptoms
-* Treatment
-* Causes
-* Prevention
-
-This improves structure and relevance of generated answers.
+Prompt templates are designed based on question type to guide the model’s output structure and improve relevance.
 
 ---
 
-### Training Objective
+## Mathematical Formulation
 
-The model is trained using cross-entropy loss:
+### 1. Language Modeling Objective
+
+The model learns the probability of a sequence of tokens:
 
 $$
-\mathcal{L} = - \sum \log P(w_i | w_1, ..., w_{i-1})
+P(W) = \prod_{i=1}^{N} P(w_i \mid w_1, w_2, ..., w_{i-1})
 $$
+
+This represents autoregressive generation where each token depends on previous tokens.
+
+---
+
+### 2. Training Loss (Cross-Entropy)
+
+The objective is to minimize cross-entropy loss:
+
+$$
+\mathcal{L} = - \sum_{i=1}^{N} \log P(w_i \mid w_1, ..., w_{i-1})
+$$
+
+This ensures the generated sequence closely matches the ground truth.
+
+---
+
+### 3. Self-Attention Mechanism
+
+The core of the transformer is self-attention:
+
+$$
+\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V
+$$
+
+where
+
+* $Q$ = Query
+* $K$ = Key
+* $V$ = Value
+* $d_k$ = dimension scaling factor
+
+This allows the model to focus on relevant tokens.
+
+---
+
+### 4. Multi-Head Attention
+
+Multiple attention heads are used:
+
+$$
+\text{MultiHead}(Q,K,V) = \text{Concat}(head_1,...,head_h)W^O
+$$
+
+Each head captures different contextual relationships.
+
+---
+
+### 5. Transformer Layer
+
+Each decoder layer consists of:
+
+$$
+\text{LayerNorm}(x + \text{Attention}(x))
+$$
+
+$$
+\text{LayerNorm}(x + \text{FeedForward}(x))
+$$
+
+This ensures stable learning and deep representation.
+
+---
+
+### 6. Softmax Output
+
+The probability distribution over vocabulary:
+
+$$
+P(w_i) = \frac{e^{z_i}}{\sum_j e^{z_j}}
+$$
+
+---
+
+### 7. BLEU Score
+
+Evaluation metric:
+
+$$
+BLEU = BP \cdot \exp \left( \sum_{n=1}^{N} w_n \log p_n \right)
+$$
+
+This measures similarity between generated and reference text.
+
+---
+
+### 8. Perplexity
+
+Model uncertainty:
+
+$$
+PP(W) = \sqrt[N]{\prod_{i=1}^{N} \frac{1}{P(w_i \mid w_1,...,w_{i-1})}}
+$$
+
+Lower perplexity indicates better predictions.
+
+---
+
+### 9. Correlation (Confidence vs Error)
+
+$$
+r = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum (x_i - \bar{x})^2 \sum (y_i - \bar{y})^2}}
+$$
+
+This measures reliability of model predictions.
 
 ---
 
 ## Dataset
 
-* Dataset: BioASQ
-* Format: Question-Answer pairs
-* Total samples: ~12,000
-
-Data is converted into:
-
-```
-Question: <query> Answer: <response>
-```
+The model is trained on the BioASQ dataset consisting of biomedical question-answer pairs. The dataset includes multiple question types such as definition, factoid, treatment, and yes/no.
 
 ---
 
 ## Implementation
 
-### 1. Dataset Processing
-
-Implemented in `data_processor.py` 
-
-* Loads BioASQ JSON
-* Converts into text format
-* Tokenizes using BioGPT tokenizer
-* Outputs input_ids and attention_mask
+* Dataset processing using tokenization
+* BioGPT pretrained model for generation
+* Prompt-based input formatting
+* Training using AdamW optimizer
 
 ---
 
-### 2. Model
+## Results and Inference
 
-Implemented in `model.py` 
+### Training Behavior
 
-Key features:
-
-* Uses pretrained BioGPT
-* Detects question type
-* Generates structured prompts
-* Uses beam search and sampling
-* Applies response cleaning
+The decreasing training and validation loss indicates stable learning and good generalization. The model does not show signs of severe overfitting.
 
 ---
 
-### 3. Training Pipeline
+### BLEU Score Analysis
 
-Implemented in `train.py` 
-
-* Optimizer: AdamW
-* Learning Rate: $2 \times 10^{-5}$
-* Epochs: 5
-* Batch size: 2
-* Loss: Cross-Entropy
-
-Model checkpoints are saved after each epoch.
+A BLEU-2 score of 0.42 indicates strong alignment with reference answers. Structured question types achieve higher accuracy due to predictable response patterns.
 
 ---
 
-## Results
+### Learning Trend
 
-### 1. Training Performance
-
-Fig. 1: Training vs Validation Loss
-
-The loss decreases steadily across epochs, showing convergence.
+The steady increase in BLEU score across epochs confirms effective fine-tuning and learning progression.
 
 ---
 
-### 2. BLEU Score
+### Response Quality
 
-* Final BLEU-2 Score: 0.42
-* Baseline: 0.33
-
-Fig. 2: BLEU Score across Question Types
-
-* Highest: Yes/No
-* Lowest: Summary
+The generated responses are coherent, medically relevant, and well-structured. The model maintains an optimal response length, balancing detail and clarity.
 
 ---
 
-### 3. BLEU Progression
+### Token Behavior
 
-Fig. 3: BLEU Score vs Epoch
-
-Score improves from 0.31 to 0.42.
+The model adapts to varying input lengths and produces consistent output lengths similar to expert responses.
 
 ---
 
-### 4. Token Analysis
+### Reliability
 
-Fig. 4: Answer Length Distribution
-
-* Most responses: 35–55 tokens
-
-Fig. 5: Input Length Distribution
-
-* Most inputs: 80–100 tokens
+The inverse relationship between confidence and error demonstrates that the model is well-calibrated and reliable.
 
 ---
 
-### 5. Confidence Analysis
+### Attention Insight
 
-Fig. 6: Confidence vs Error
-
-* Higher confidence → lower error
+The attention mechanism focuses on critical biomedical terms, enabling accurate and context-aware responses.
 
 ---
 
-### 6. Attention Analysis
+### Overall Inference
 
-Fig. 7: Token Attention Heatmap
+The integration of transformer architecture and prompt engineering results in:
 
-* Model focuses on key biomedical tokens
+* Improved semantic understanding
+* Better response structuring
+* Enhanced accuracy across question types
 
 ---
 
 ## Conclusion
 
-MedBot demonstrates the effectiveness of combining BioGPT with prompt engineering for biomedical question answering. The system produces structured, context-aware responses and shows improved performance across evaluation metrics.
+MedBot successfully demonstrates the application of transformer-based models in biomedical question answering. The use of prompt engineering significantly enhances response quality.
 
-This approach can be extended to real-world applications such as medical education and research assistance.
+Future improvements can include larger datasets, model scaling, and integration with real-time clinical systems.
 
 ---
 
@@ -222,7 +273,7 @@ This approach can be extended to real-world applications such as medical educati
 
 1. BioGPT Paper
 2. BioASQ Dataset
-3. Transformer Architecture
+3. Attention is All You Need
 4. BLEU Score Paper
 5. Hugging Face Transformers
 
