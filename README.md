@@ -94,7 +94,7 @@ This represents autoregressive generation where each token depends on previous t
 The objective is to minimize cross-entropy loss:
 
 $$
-\mathcal{L} = - \sum_{i=1}^{N} \log P(w_i \mid w_1, ..., w_{i-1})
+\mathcal{L} = - \sum_{i=1}^{N} \log P(w_i \mid w_1, ...., w_{i-1})
 $$
 
 This ensures the generated sequence closely matches the ground truth.
